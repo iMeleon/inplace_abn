@@ -175,6 +175,7 @@ def main():
 
     # Run testing
     scales = eval(args.scales)
+    arr = []
     with torch.no_grad():
         for batch_i, rec in enumerate(data_loader):
             print("Testing batch [{:3d}/{:3d}]".format(batch_i + 1, len(data_loader)))
@@ -191,12 +192,17 @@ def main():
                 pred = pred.cpu()
                 pred_img = get_pred_image(pred, out_size, args.output_mode == "palette")
                 pred_img.save(path.join(args.output, img_name + ".png"))
+                pix = np.array(pred_img)
+                arr.append(pix)
+                print(pix.shape)
 
                 # Optionally save probabilities
                 if args.output_mode == "prob":
                     prob_img = get_prob_image(prob, out_size)
                     prob_img.save(path.join(args.output, img_name + "_prob.png"))
-
+    new_arr = np.array(arr)
+    np.save('data.npy', new_arr)
+    print("Saved  to nplace_abn/scripts/data.npy",new_arr.shape)
 
 def load_snapshot(snapshot_file):
     """Load a training snapshot"""
